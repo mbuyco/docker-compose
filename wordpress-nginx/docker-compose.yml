@@ -1,0 +1,35 @@
+version: "3"
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: s3cr3t
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: w0rdpr3ss
+
+  wordpress:
+    image: wordpress:php7.2-fpm-alpine
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: w0rdpr3ss
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress:/var/www/html
+
+  web:
+    image: nginx:1.19-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - wordpress:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+
+volumes:
+  wordpress:
+  db:
